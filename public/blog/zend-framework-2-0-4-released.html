@@ -1,0 +1,393 @@
+<!DOCTYPE html><html lang="en">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <meta charset="utf-8">
+
+    <title>Zend Framework 2.0.4 Released! - Zend Framework - Zend Framework</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" >
+    <link href="/css/main.css" media="screen" rel="stylesheet" type="text/css" >
+<link href="/images/Application/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" >
+<link href="/css/ZfSiteBlog/blog.css" media="screen" rel="stylesheet" type="text/css" >
+<link href="/blog/feed-atom.xml" rel="alternate" type="application/atom+xml" title="Zend Framework Atom Feed" >
+<link href="/blog/feed-rss.xml" rel="alternate" type="application/rss+xml" title="Zend Framework RSS Feed" >
+<link href="/security/feed/" rel="alternate" type="application/rss+xml" title="Zend Framework Security Advisories" >
+<link href="/blog/feed-rss.xml" rel="alternate" type="application/rss+xml" title="Zend Framework Blog RSS Feed" >
+<link href="/blog/feed-atom.xml" rel="alternate" type="application/atom+xml" title="Zend Framework Blog Atom Feed" >
+<link href="/images/favicon.ico" rel="shortcut icon" type="image/vnd.microsoft.icon" >
+        <script data-dojo-config="async: true, dojoBlankHtmlUrl: '/js/ZfSiteBlog/blank.html',
+    packages: [ 
+        {
+            name: 'ZfSiteBlog',
+            location: '/js/ZfSiteBlog'
+        } ]" src="//ajax.googleapis.com/ajax/libs/dojo/1.8.0/dojo/dojo.js"></script>
+    
+    <script type="text/javascript">
+    //<!--
+    require(["ZfSiteBlog/blog"]);    //-->
+</script>
+        <script type="text/javascript">
+        function setCustomVar() {
+            var t = _gat._getTrackerByName();
+            if (t._getVisitorCustomVar(1) === undefined) {
+                t._setCustomVar(1, 'subdomains', '<value:framework>', 2);
+            }
+        }
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-291885-1']);
+        _gaq.push(['_setDomainName', '.zend.com']);
+        _gaq.push(setCustomVar);
+        _gaq.push(['_trackPageview']);
+
+        (function() {
+            var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+            ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(ga);
+        })();
+
+        var google_conversion_id = 1072138399;
+        var google_conversion_label = "PTX5CIfdwAMQn5Ge_wM";
+        var google_custom_params = window.google_tag_params;
+        var google_remarketing_only = true;
+    </script>
+  </head>
+  <body>
+    <div id="wrapper-head-top">
+      <div id="head-top">
+        <div id="head-top-logo">
+            <a href="/">
+            <img src="/images/logo.png" width="173" height="41" alt="Zend Framework" />
+          </a>
+        </div>
+        <div id="head-top-search">
+          <form method="get" action="//www.google.com/search" target="_blank">
+            <input type="text" name="q" value="" maxlength="255" placeholder="Search in the site" />
+            <input type="hidden" name="sitesearch" value="framework.zend.com" />
+          </form>
+        </div>
+        <div id="head-top-nav">
+          <ul>
+            <li><a href="/about">About</a></li>
+            <li><a href="/learn">Learn</a></li>
+            <li><a href="/downloads">Get Started</a></li>
+            <li><a href="/participate/">Participate</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div id="top-header-shadow"></div>
+    <a href="https://github.com/zendframework/zf2"><img style="position: absolute; top: 66px; right: 0; border: 0;" src="/images/fork-us-on-github.png" alt="Fork us on GitHub"></a>
+        <div id="main-content-wrapper">
+      <div id="site-content">
+          <div class="overview">
+    <ul>
+        <li><a href="/blog/index.html">Return to entries</a></li>
+    </ul>
+    <aside class="four columns offset-by-one omega sidebar blog">
+        <div class="metadata">
+            <ul>
+                <li>Posted on <b>2012-11-20 18:00:00</b>.</li>
+                <li>Last updated on <b>2012-11-20 18:00:00</b>.</li>
+            </ul>
+        </div>
+    </aside>
+    
+    </div>
+    
+      <div class="main-content two">
+        <h1 style="text-align: right">ZF Blog</h1>
+
+<article class="eleven columns alpha blog">
+<h2>Zend Framework 2.0.4 Released!</h2>
+<p>
+    The Zend Framework community is pleased to announce the immediate availability
+    of Zend Framework 2.0.4! Packages and installation instructions are
+    available at:
+</p>
+
+<ul>
+    <li>
+        <a href="/downloads/latest">http://framework.zend.com/downloads/latest</a>
+    </li>
+</ul><h2>Changes</h2>
+
+<p>
+    ZF2 has shipped with two "view strategies" aimed at simplifying common use 
+    cases around developing JSON and XML APIs: <code>Zend\View\Strategy\JsonStrategy</code> 
+    and <code>Zend\View\Strategy\FeedStrategy</code>. Each of these would
+    select an appropriate renderer based on one of the following criteria:
+</p>
+
+<ul>
+    <li>If the view model present was of a specific type (e.g., 
+        <code>JsonModel</code>, <code>FeedModel</code>).
+    </li>
+    <li>If the <code>Accept</code> header contained the appropriate media type.</li>
+</ul>
+
+<p>
+    This latter condition sparked some worry that, when enabled at the 
+    application level (vs. enabled based on selected module, controller, action, or
+    other more specific criteria), any endpoint could be forced to return JSON or Atom
+    (based on the strategies registered), regardless of whether or not it was appropriate.
+    This could lead to a couple bad situations:
+</p>
+
+<ul>
+    <li>Data present in the view model not intended for actual display now being displayed.</li>
+    <li>Raising of exceptions due to insuitability of certain view variables 
+        for serialization in the selected format (e.g., invalid feed data, 
+        non-JSON-serializeable objects, etc.); this could lead to resource 
+        consumption and potentially other vulnerabilities.</li>
+</ul>
+
+<p>
+    Based on these concerns, we made the following changes:
+</p>
+
+<ul>
+    <li>The <code>JsonStrategy</code> and <code>FeedStrategy</code> now only ever select
+        a renderer based on the current view model type: e.g. if you want to 
+        expose something as JSON, you must return a <code>JsonModel</code>.
+    </li>
+
+    <li>Introduced a new controller plugin, <code>acceptableViewModelSelector()</code>.
+        This helper can be used to select an appropriate view model if the <code>Accept</code>
+        header meets criteria you specify.
+    </li>
+</ul>
+
+As an example of the latter:
+
+<pre class="highlight">
+class SomeController extends AbstractActionController
+{
+    protected $acceptCriteria = array(
+        'Zend\View\Model\JsonModel' => array(
+            'application/json',
+        ),
+        'Zend\View\Model\FeedModel' => array(
+            'application/rss+xml',
+        ),
+    );
+
+    public function apiAction()
+    {
+        $viewModel = $this->acceptableViewModelSelector($this->acceptCriteria);
+        
+        // Potentially vary execution based on model returned
+        if ($viewModel instanceof JsonModel) {
+            // ...
+        }
+    }
+}
+</pre>
+
+<p>
+    The above would return a standard <code>Zend\View\Model\ViewModel</code> instance
+    if the criteria is not met, and the specified view model types if the 
+    specific criteria is met. Rules are matched in order, with the first match "winning."
+</p>
+
+
+<h2>Changelog</h2>
+
+<p>
+    In addition to the changes mentioned above, this release included more than 
+    40 patches, ranging from minor docblock improvements to bugfixes.  The full 
+    list is as follows:
+</p>
+
+<ul>
+    <li><a href="https://github.com/zendframework/zf2/issues/2808">2808: Add serializer better inheritance and extension</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2813">2813: Add test on canonical name with the ServiceManager</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2832">2832: bugfix: The helper DateFormat does not cache correctly when a pattern is set.</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2837">2837: Add empty option before empty check</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2843">2843: change self:: with static:: in call-ing static property/method</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2857">2857: Unnecessary path assembly on return in Zend\Mvc\Router\Http\TreeRouteStack->assemble() line 236</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2867">2867: Enable view sub-directories when using ModuleRouteListener</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2872">2872: Resolve naming conflicts in foreach statements</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2878">2878: Fix : change self:: with static:: in call-ing static property/method() in other components ( all )</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2879">2879: remove unused const in Zend\Barcode\Barcode.php</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2896">2896: Constraints in Zend\Db\Metadata\Source\AbstractSource::getTable not initalised</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2907">2907: Fixed proxy adapter keys being incorrectly set due Zend\Http\Client</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2909">2909: Change format of Form element DateTime and DateTimeLocal</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2921">2921: Added Chinese translations for zf2 validate/captcha resources</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2924">2924: small speed-up of Zend\EventManager\EventManager::triggerListeners()</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2929">2929: SetCookie::getFieldValue() always uses urlencode() for cookie values, even in case they are already encoded</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2930">2930: Add minor test coverage to MvcEvent</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2932">2932: Sessions: SessionConfig does not allow setting non-directory save path</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2937">2937: preserve matched route name within route match instance while forwarding...</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2940">2940: change 'Cloud\Decorator\Tag' to 'Cloud\Decorator\AbstractTag'</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2941">2941: Logical operator fix : 'or' change to '||' and 'and' change to '&&'</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2952">2952: Various Zend\Mvc\Router\Http routers turn + into a space in path segments</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2957">2957: Make Partial proxy to view render function</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2971">2971: Zend\Http\Cookie undefined self::CONTEXT_REQUEST</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2976">2976: Fix for #2541</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2981">2981: Controller action HttpResponse is not used by SendResponseListener</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2983">2983: replaced all calls to $this->xpath with $this->getXpath() to always have...</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2986">2986: Add class to file missing a class (fixes #2789)</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2987">2987: fixed Zend\Session\Container::exchangeArray</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2994">2994: Fixes #2993 - Add missing asterisk to method docblock</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2997">2997: Fixing abstract factory instantiation time</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2999">2999: Fix for GitHub issue 2579</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/3002">3002: update master's resources/ja Zend_Validate.php message</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/3003">3003: Adding tests for zendframework/zf2#2593</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/3006">3006: Hotfix for #2497</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/3007">3007: Fix for issue 3001 Zend\Db\Sql\Predicate\Between fails with min and max ...</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/3008">3008: Hotfix for #2482</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/3009">3009: Hotfix for #2451</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/3013">3013: Solved Issue 2857</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/3025">3025: Removing the separator between the hidden and the visible inputs. As the...</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/3027">3027: Reduced #calls of plugin() in PhpRenderer using a cache mechanism</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/3029">3029: Fixed the pre-commit script, missed the fix command</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/3030">3030: Mark module as loaded before trigginer EVENT_LOAD_MODULE</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/3031">3031: Zend\Db\Sql Fix for Insert's Merge and Set capabilities with simlar keys</a></li>
+</ul>
+
+<h2>Thank You!</h2>
+
+<p>
+    Many thanks to all contributors to this release! 
+</p>
+
+<h2>Reminder</h2>
+
+<p>
+    Maintenance releases happen monthly on the third Wednesday. Additionally, 
+    we have the next minor release, 2.1.0, slated for sometime next month.
+</p><div class="social-media">
+<a href="https://twitter.com/share" class="twitter-share-button" data-via="zfdevteam">Tweet</a>
+<script>!function(d,s,id){var js,fjs=d.getElementsByTagName(s)[0];if(!d.getElementById(id)){js=d.createElement(s);js.id=id;js.src="//platform.twitter.com/widgets.js";fjs.parentNode.insertBefore(js,fjs);}}(document,"script","twitter-wjs");</script>
+</div>
+
+<div class="social-media">
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<div class="fb-like" data-send="true" data-width="450" data-show-faces="true"></div>
+</div>
+
+<div class="social-media">
+<div class="g-plusone" data-size="medium" data-annotation="inline"></div>
+</div>
+
+<!-- Place this render call where appropriate -->
+<script type="text/javascript">
+require(["dojo/domReady!"], function(){
+    var po = document.createElement('script'); po.type = 'text/javascript'; po.async = true;
+    po.src = 'https://apis.google.com/js/plusone.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(po, s);
+});
+</script>
+
+<div class="social-media">
+<a href="http://www.reddit.com/submit" onclick="window.location = 'http://www.reddit.com/submit?url=' + encodeURIComponent(window.location); return false"> <img src="http://www.reddit.com/static/spreddit1.gif" alt="submit to reddit" border="0" /> </a>
+</div>
+
+    <div id="disqus_thread"></div>
+    <script type="text/javascript">
+        var disqus_developer = 1;
+        var disqus_shortname = 'zf2blog';
+        var disqus_identifier = 'zend-framework-2-0-4-released';
+        var disqus_url = 'http://mwop.net/blog//zend-framework-2-0-4-released.html';
+        var disqus_title = 'Zend Framework 2.0.4 Released!';
+
+        /* * * DON'T EDIT BELOW THIS LINE * * */
+        (function() {
+            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+            dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+        })();
+    </script>
+    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+    <a href="http://disqus.com" class="dsq-brlink">blog comments powered by <span class="logo-disqus">Disqus</span></a></article>
+
+
+
+      </div>
+
+      <div class="clear"></div>
+    </div>
+    
+    <footer id="wrapper-footer">
+      <div id="footer">
+        <div id="group-links">
+          <div class="links">
+            <h4>About</h4>
+            <ul>
+              <li class="link-highlight"><a href="/about/">Overview</a></li>
+              <li><a href="/about/faq/">ZF2 FAQ</a></li>
+              <li><a href="/about/faq-v1/">ZF1 FAQ</a></li>
+
+                            <li><a href="/security/">Security</a></li>
+              <li><a href="/changelog/">Changelog</a></li>
+              <li><a href="/blog/index.html">Blog</a></li>
+            </ul>
+          </div>
+
+          <div class="links">
+            <h4>Learn</h4>
+            <ul>
+              <li><a href="/manual/2.0/en/user-guide/overview.html">User Guide</a></li>
+              <li><a href="/manual/2.0/en/index.html">Reference Guide</a></li>
+              <li><a href="/docs/api/">APIs</a></li>
+<!--              <li><a href="">Webinars</a></li>-->
+              <li><a href="/learn/training-and-certification/">Training & Certification</a></li>
+              <li><a href="/learn/support-and-consulting/">Support & Consulting</a></li>
+            </ul>
+          </div>
+
+          <div class="links">
+            <h4>Get Started</h4>
+            <ul>
+              <li><a href="/downloads">Downloads</a></li>
+              <li><a href="/downloads/skeleton-app">Get the Skeleton App</a></li>
+              <li><a href="/downloads/phpcloud">Try on <span class="link-highlight">phpcloud.com</span></a></li>
+            </ul>
+          </div>
+
+          <div class="links">
+            <h4>Participate</h4>
+            <ul>
+              <li><a href="/participate/">Overview</a></li>
+              <li><a href="/participate/contributor-guide/">Contributors Guide</a></li>
+                            <li><a href="/participate/blogs/">Blogs</a></li>
+                          </ul>
+          </div>
+
+          <div id="contact-menu">
+            <h4>Contact Us</h4>
+            <ul>
+              <li><a href="/contact">form</a></li>
+              <li><a href="/archives/">mailing lists</a></li>
+              <li><a href="/irc/">IRC</a></li>
+            </ul>
+          </div>
+        </div>
+
+        <div id="footer-copyright">
+          <p>&copy; 2006 - 2012 by Zend Technologies Ltd. All rights reserved.</p>
+          <a href="#wrapper-head-top" id="to_top"><img src="/images/arrow.png" width="22" height="20" alt="back to top" /></a>
+        </div>
+      </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script type="text/javascript" src="/js/jquery-1.7.1.min.js"></script>
+        <script type="text/javascript" language="javascript" src="/js/elqNow/elqCfg.js"></script>
+    <script type="text/javascript" language="javascript" src="/js/elqNow/elqImg.js"></script>
+    <script type="text/javascript" language="javascript" src="//www.googleadservices.com/pagead/conversion.js"></script>
+    <noscript>
+    <div style="display:inline;">
+    <img height="1" width="1" style="border-style:none;" alt="" src="//googleads.g.doubleclick.net/pagead/viewthroughconversion/1072138399/?value=0&amp;label=PTX5CIfdwAMQn5Ge_wM&amp;guid=ON&amp;script=0"/>
+    </div>
+    </noscript>
+
+        <!-- BEGIN LivePerson Monitor. --><script language='javascript'> var lpMTagConfig = {'lpServer' : "server.iad.liveperson.net",'lpNumber' : "10919998",'lpProtocol' : "https"}; function lpAddMonitorTag(src){if(typeof(src)=='undefined'||typeof(src)=='object'){src=lpMTagConfig.lpMTagSrc?lpMTagConfig.lpMTagSrc:'/hcp/html/mTag.js';}if(src.indexOf('http')!=0){src=lpMTagConfig.lpProtocol+"://"+lpMTagConfig.lpServer+src+'?site='+lpMTagConfig.lpNumber;}else{if(src.indexOf('site=')<0){if(src.indexOf('?')<0)src=src+'?';else src=src+'&';src=src+'site='+lpMTagConfig.lpNumber;}};var s=document.createElement('script');s.setAttribute('type','text/javascript');s.setAttribute('charset','iso-8859-1');s.setAttribute('src',src);document.getElementsByTagName('head').item(0).appendChild(s);} if (window.attachEvent) window.attachEvent('onload',lpAddMonitorTag); else window.addEventListener("load",lpAddMonitorTag,false);</script><!-- END LivePerson Monitor. -->
+  </body>
+</html>

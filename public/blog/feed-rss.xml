@@ -1,0 +1,1427 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:content="http://purl.org/rss/1.0/modules/content/" xmlns:slash="http://purl.org/rss/1.0/modules/slash/">
+  <channel>
+    <title>Blog Entries - ZF Blog</title>
+    <description>Blog Entries - ZF Blog</description>
+    <pubDate>Sun, 25 Nov 2012 15:00:00 +0000</pubDate>
+    <generator>Zend_Feed_Writer 2.0.2 (http://framework.zend.com)</generator>
+    <link>http://framework.zend.com/blog.html</link>
+    <atom:link rel="self" type="application/rss+xml" href="http://framework.zend.com/blog-rss.xml"/>
+    <item>
+      <title>Zend Framework 2.0.5 Released!</title>
+      <pubDate>Sun, 25 Nov 2012 15:00:00 +0000</pubDate>
+      <link>http://framework.zend.com/blog/zend-framework-2-0-5-released.html</link>
+      <guid>http://framework.zend.com/blog/zend-framework-2-0-5-released.html</guid>
+      <author>matthew@zend.com (Matthew Weier O'Phinney)</author>
+      <dc:creator>Matthew Weier O'Phinney</dc:creator>
+      <content:encoded><![CDATA[<p>
+    The Zend Framework community is pleased to announce the immediate availability
+    of Zend Framework 2.0.5! Packages and installation instructions are
+    available at:
+</p>
+
+<ul>
+    <li>
+        <a href="/downloads/latest">http://framework.zend.com/downloads/latest</a>
+    </li>
+</ul><h2>Security Announcement</h2>
+
+<p>
+    This release is a security release, and contains fixes to both the 
+    <code>Zend\Session\Validator\RemoteAddr</code> and <code>Zend\View\Helper\ServerUrl</code>
+    classes. If you are using either, we recommend upgrading immediately. For more
+    information, please read the <a href="/security/advisory/ZF2012-04">ZF2012-04 advisory details</a>.
+    Thanks goes to Fabien Potencier for alerting us of the issues and working with us
+    on appropriate fixes.
+</p>
+
+
+<h2>Changelog</h2>
+
+<p>
+    In addition to the security fixes mentioned above, this release included 
+    five other patches, mostly trivial. The full list is as follows:
+</p>
+
+<ul>
+    <li><a href="https://github.com/zendframework/zf2/issues/3004">3004: Zend\Db unit tests fail with code coverage enabled</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/3039">3039: combine double if into single conditional</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/3042">3042: fix typo 'consist of' should be 'consists of' in singular</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/3045">3045: Reduced the #calls of rawurlencode() using a cache mechanism</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/3048">3048: Applying quickfix for zendframework/zf2#3004</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/3095">3095: Process X-Forwarded-For header in correct order</a></li>
+</ul>
+
+<h2>Thank You!</h2>
+
+<p>
+    Many thanks to all contributors to this release! 
+</p>
+
+<h2>Reminder</h2>
+
+<p>
+    Maintenance releases happen monthly on the third Wednesday. Additionally, 
+    we have the next minor release, 2.1.0, slated for sometime next month.
+</p>]]></content:encoded>
+      <slash:comments>0</slash:comments>
+    </item>
+    <item>
+      <title>Zend Framework 2.0.4 Released!</title>
+      <pubDate>Tue, 20 Nov 2012 23:00:00 +0000</pubDate>
+      <link>http://framework.zend.com/blog/zend-framework-2-0-4-released.html</link>
+      <guid>http://framework.zend.com/blog/zend-framework-2-0-4-released.html</guid>
+      <author>matthew@zend.com (Matthew Weier O'Phinney)</author>
+      <dc:creator>Matthew Weier O'Phinney</dc:creator>
+      <content:encoded><![CDATA[<p>
+    The Zend Framework community is pleased to announce the immediate availability
+    of Zend Framework 2.0.4! Packages and installation instructions are
+    available at:
+</p>
+
+<ul>
+    <li>
+        <a href="/downloads/latest">http://framework.zend.com/downloads/latest</a>
+    </li>
+</ul><h2>Changes</h2>
+
+<p>
+    ZF2 has shipped with two "view strategies" aimed at simplifying common use 
+    cases around developing JSON and XML APIs: <code>Zend\View\Strategy\JsonStrategy</code> 
+    and <code>Zend\View\Strategy\FeedStrategy</code>. Each of these would
+    select an appropriate renderer based on one of the following criteria:
+</p>
+
+<ul>
+    <li>If the view model present was of a specific type (e.g., 
+        <code>JsonModel</code>, <code>FeedModel</code>).
+    </li>
+    <li>If the <code>Accept</code> header contained the appropriate media type.</li>
+</ul>
+
+<p>
+    This latter condition sparked some worry that, when enabled at the 
+    application level (vs. enabled based on selected module, controller, action, or
+    other more specific criteria), any endpoint could be forced to return JSON or Atom
+    (based on the strategies registered), regardless of whether or not it was appropriate.
+    This could lead to a couple bad situations:
+</p>
+
+<ul>
+    <li>Data present in the view model not intended for actual display now being displayed.</li>
+    <li>Raising of exceptions due to insuitability of certain view variables 
+        for serialization in the selected format (e.g., invalid feed data, 
+        non-JSON-serializeable objects, etc.); this could lead to resource 
+        consumption and potentially other vulnerabilities.</li>
+</ul>
+
+<p>
+    Based on these concerns, we made the following changes:
+</p>
+
+<ul>
+    <li>The <code>JsonStrategy</code> and <code>FeedStrategy</code> now only ever select
+        a renderer based on the current view model type: e.g. if you want to 
+        expose something as JSON, you must return a <code>JsonModel</code>.
+    </li>
+
+    <li>Introduced a new controller plugin, <code>acceptableViewModelSelector()</code>.
+        This helper can be used to select an appropriate view model if the <code>Accept</code>
+        header meets criteria you specify.
+    </li>
+</ul>
+
+As an example of the latter:
+
+<pre class="highlight">
+class SomeController extends AbstractActionController
+{
+    protected $acceptCriteria = array(
+        'Zend\View\Model\JsonModel' => array(
+            'application/json',
+        ),
+        'Zend\View\Model\FeedModel' => array(
+            'application/rss+xml',
+        ),
+    );
+
+    public function apiAction()
+    {
+        $viewModel = $this->acceptableViewModelSelector($this->acceptCriteria);
+        
+        // Potentially vary execution based on model returned
+        if ($viewModel instanceof JsonModel) {
+            // ...
+        }
+    }
+}
+</pre>
+
+<p>
+    The above would return a standard <code>Zend\View\Model\ViewModel</code> instance
+    if the criteria is not met, and the specified view model types if the 
+    specific criteria is met. Rules are matched in order, with the first match "winning."
+</p>
+
+
+<h2>Changelog</h2>
+
+<p>
+    In addition to the changes mentioned above, this release included more than 
+    40 patches, ranging from minor docblock improvements to bugfixes.  The full 
+    list is as follows:
+</p>
+
+<ul>
+    <li><a href="https://github.com/zendframework/zf2/issues/2808">2808: Add serializer better inheritance and extension</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2813">2813: Add test on canonical name with the ServiceManager</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2832">2832: bugfix: The helper DateFormat does not cache correctly when a pattern is set.</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2837">2837: Add empty option before empty check</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2843">2843: change self:: with static:: in call-ing static property/method</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2857">2857: Unnecessary path assembly on return in Zend\Mvc\Router\Http\TreeRouteStack->assemble() line 236</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2867">2867: Enable view sub-directories when using ModuleRouteListener</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2872">2872: Resolve naming conflicts in foreach statements</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2878">2878: Fix : change self:: with static:: in call-ing static property/method() in other components ( all )</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2879">2879: remove unused const in Zend\Barcode\Barcode.php</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2896">2896: Constraints in Zend\Db\Metadata\Source\AbstractSource::getTable not initalised</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2907">2907: Fixed proxy adapter keys being incorrectly set due Zend\Http\Client</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2909">2909: Change format of Form element DateTime and DateTimeLocal</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2921">2921: Added Chinese translations for zf2 validate/captcha resources</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2924">2924: small speed-up of Zend\EventManager\EventManager::triggerListeners()</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2929">2929: SetCookie::getFieldValue() always uses urlencode() for cookie values, even in case they are already encoded</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2930">2930: Add minor test coverage to MvcEvent</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2932">2932: Sessions: SessionConfig does not allow setting non-directory save path</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2937">2937: preserve matched route name within route match instance while forwarding...</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2940">2940: change 'Cloud\Decorator\Tag' to 'Cloud\Decorator\AbstractTag'</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2941">2941: Logical operator fix : 'or' change to '||' and 'and' change to '&&'</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2952">2952: Various Zend\Mvc\Router\Http routers turn + into a space in path segments</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2957">2957: Make Partial proxy to view render function</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2971">2971: Zend\Http\Cookie undefined self::CONTEXT_REQUEST</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2976">2976: Fix for #2541</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2981">2981: Controller action HttpResponse is not used by SendResponseListener</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2983">2983: replaced all calls to $this->xpath with $this->getXpath() to always have...</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2986">2986: Add class to file missing a class (fixes #2789)</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2987">2987: fixed Zend\Session\Container::exchangeArray</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2994">2994: Fixes #2993 - Add missing asterisk to method docblock</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2997">2997: Fixing abstract factory instantiation time</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2999">2999: Fix for GitHub issue 2579</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/3002">3002: update master's resources/ja Zend_Validate.php message</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/3003">3003: Adding tests for zendframework/zf2#2593</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/3006">3006: Hotfix for #2497</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/3007">3007: Fix for issue 3001 Zend\Db\Sql\Predicate\Between fails with min and max ...</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/3008">3008: Hotfix for #2482</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/3009">3009: Hotfix for #2451</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/3013">3013: Solved Issue 2857</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/3025">3025: Removing the separator between the hidden and the visible inputs. As the...</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/3027">3027: Reduced #calls of plugin() in PhpRenderer using a cache mechanism</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/3029">3029: Fixed the pre-commit script, missed the fix command</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/3030">3030: Mark module as loaded before trigginer EVENT_LOAD_MODULE</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/3031">3031: Zend\Db\Sql Fix for Insert's Merge and Set capabilities with simlar keys</a></li>
+</ul>
+
+<h2>Thank You!</h2>
+
+<p>
+    Many thanks to all contributors to this release! 
+</p>
+
+<h2>Reminder</h2>
+
+<p>
+    Maintenance releases happen monthly on the third Wednesday. Additionally, 
+    we have the next minor release, 2.1.0, slated for sometime next month.
+</p>]]></content:encoded>
+      <slash:comments>0</slash:comments>
+    </item>
+    <item>
+      <title>Zend Framework 2.0.3 Released!</title>
+      <pubDate>Wed, 17 Oct 2012 22:15:00 +0000</pubDate>
+      <link>http://framework.zend.com/blog/zend-framework-2-0-3-released.html</link>
+      <guid>http://framework.zend.com/blog/zend-framework-2-0-3-released.html</guid>
+      <author>matthew@zend.com (Matthew Weier O'Phinney)</author>
+      <dc:creator>Matthew Weier O'Phinney</dc:creator>
+      <content:encoded><![CDATA[<p>
+    The Zend Framework community is pleased to announce the immediate availability
+    of Zend Framework 2.0.3! Packages and installation instructions are
+    available at:
+</p>
+
+<ul>
+    <li>
+        <a href="/downloads/latest">http://framework.zend.com/downloads/latest</a>
+    </li>
+</ul><h2>Changelog</h2>
+
+<p>
+    This release included 115 changes, ranging from minor docblock improvements to bugfixes.
+    The full list is as follows:
+</p>
+
+<ul>
+    <li><a href="https://github.com/zendframework/zf2/issues/2244">2244: Fix for issue ZF2-503</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2318">2318: [WIP - help] Allow to remove decimals in CurrencyFormat</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2363">2363: Hotfix db features with eventfeature</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2380">2380: ZF2-482 Attempt to fix the buffer. Also added extra unit tests.</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2392">2392: Update library/Zend/Db/Adapter/Platform/Mysql.php</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2395">2395: Fix for http://framework.zend.com/issues/browse/ZF2-571</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2397">2397: Memcached option merge issuse</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2402">2402: Adding missing dependencies</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2404">2404: Fix to comments</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2406">2406: No, sir, that's not a boolean.</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2416">2416: Fix expressionParamIndex for AbstractSql</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2420">2420: Zend\Db\Sql\Select: Fixed issue with join expression named parameters overlapping.</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2421">2421: Update library/Zend/Http/Header/SetCookie.php</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2422">2422: fix add 2 space after @param in Zend\Loader</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2423">2423: ManagerInterface must be interface, remove 'interface' description</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2425">2425: Use built-in Travis composer</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2426">2426: [BC] Remove need of setter in ClassMethods hydrator</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2432">2432: Prevent space before end of tag with HTML5 doctype</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2433">2433: fix for setJsonpCallback not called when recieved JsonModel + test</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2434">2434: added phpdoc in Zend\Db</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2437">2437: Hotfix/console 404 reporting</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2438">2438: Improved previous fix for ZF2-558.  </a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2440">2440: Turkish Translations for Captcha and Validate</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2441">2441: Allow form collection to have any helper</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2516">2516: limit(20) -> generates LIMIT '20' and throws an IllegalQueryException</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2545">2545: getSqlStringForSqlObject() returns an invalid SQL statement with LIMIT and OFFSET clauses</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2595">2595: Pgsql adapater has codes related to MySQL</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2613">2613: Prevent password to be rendered if form validation fails</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2617">2617: Fixed Zend\Validator\Iban class name</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2619">2619: [Fix/Master] Form enctype fix when File elements are within a collection</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2620">2620: [Fix/Master] InputFilter/Input when merging was not using raw value</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2622">2622: Added ability to specify port</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2624">2624: [Fix/Master] Form's default input filters added multiple times</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2630">2630: fix relative link ( remove the relative links ) in README.md</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2631">2631: Update library/Zend/Loader/AutoloaderFactory.php</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2633">2633: fix redundance errors "The input does not appear to be a valid date" show twice</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2635">2635: Fix potential issue with Sitemap test</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2636">2636: add isset checks around timeout and maxredirects</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2641">2641: hotfix : formRow() element error multi-checkbox and radio renderError not shown</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2642">2642: Fix Travis build for CS issue</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2643">2643: fix for setJsonpCallback not called when recieved JsonModel + test</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2644">2644: Add fluidity to the prepare() function for a form</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2652">2652: Zucchi/filter tweaks</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2665">2665: pdftest fix</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2666">2666: fixed url change</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2667">2667: Possible fix for rartests</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2669">2669: skip whem gmp is loaded</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2673">2673: Input fallback value option</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2676">2676: mysqli::close() never called</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2677">2677: added phpdoc to Zend\Stdlib</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2678">2678: Zend\Db\Adapter\Sqlsrv\Sqlsrv never calls Statement\initialize() (fix within)</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2679">2679: Zend/Log/Logger.php using incorrect php errorLevel</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2680">2680: Cache: fixed bug on getTotalSpace of filesystem and dba adapter</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2681">2681: Cache/Dba: fixed notices on tearDown db4 tests</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2682">2682: Replace 'Configuration' with 'Config' when retrieving configuration</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2683">2683: Hotfix: Allow items from Abstract Factories to have setShared() called</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2685">2685: Remove unused Uses</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2686">2686: Adding code to allow EventManager trigger listeners using wildcard identifier</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2687">2687: Hotfix/db sql nested expressions</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2688">2688: Hotfix/tablegateway event feature</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2689">2689: Hotfix/composer phpunit</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2690">2690: Use RFC-3339 full-date format (Y-m-d) in Date element</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2691">2691: join on conditions don't accept alternatives to columns</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2693">2693: Update library/Zend/Db/Adapter/Driver/Mysqli/Connection.php</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2694">2694: Bring fluid interface to Feed Writer</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2698">2698: fix typo in # should be :: in exception</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2699">2699: fix elseif in javascript Upload Demo</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2700">2700: fix cs in casting variable</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2705">2705: Fix french translation</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2707">2707: Improved error message when ServiceManager does not find an invokable class</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2710">2710: #2461 - correcting the url encoding of path segments</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2711">2711: Fix/demos ProgressBar/ZendForm.php : Object of class Zend\Form\Form could not be converted to string</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2712">2712: fix cs casting variable for (array)</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2713">2713: Update library/Zend/Mvc/Service/ViewHelperManagerFactory.php</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2714">2714: Don't add separator if not prefixing columns</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2717">2717: Extends when it can : Validator\DateStep extends Validator\Date to reduce code redundancy</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2719">2719: Fixing the Cache Storage Factory Adapter Factory</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2728">2728: [Bug][Mail] Bad Regex for Content Type header</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2731">2731: Reset the Order part when resetting Select</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2732">2732: Removed references to Mysqli in Zend\Db\Adapter\Driver\Pgsql</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2733">2733: fix @package Zend_Validate should be Zend_Validator</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2734">2734: fix i18n @package and @subpackage value</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2736">2736: fix captcha helper test.</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2737">2737: Issue #2728 - Bad Regex for Content Type header</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2738">2738: fix link 'quickstart' to version 2.0</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2739">2739: remove '@subpackage'  because Zend\Math is not in subpackage</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2742">2742: remove () in echo-ing</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2749">2749: Fix for #2678 (Zend\Db's Sqlsrv Driver)</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2750">2750: Adds the ability to instanciate by factory to AbstractPluginManager</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2754">2754: add the support to register module paths over namespace</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2755">2755:  remove Zend\Mvc\Controller\PluginBroker from aliases in "$defaultServiceConfig"</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2759">2759: Fix Zend\Code\Scanner\TokenArrayScanner</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2764">2764: Fixed Zend\Math\Rand::getString() to pass the parameter $strong to ::getBytes()</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2765">2765: Csrf: always use dedicated setter</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2766">2766: Session\Storage: always preserve _REQUEST_ACCESS_TIME</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2768">2768: Zend\Validator dependency is missed in Zend\Cache composer.json</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2769">2769: change valueToLDAP to valueToLdap and valueFromLDAP to valueFromLdap</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2770">2770: [WIP] Memcached</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2775">2775: Zend\Db\Sql: Fix for Mysql quoting during limit and offset</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2776">2776: Allow whitespace in Iban</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2777">2777: Fix issue when PREG_BAD_UTF8_OFFSET_ERROR is defined but Unicode support is not enabled on PCRE</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2778">2778: Undefined Index fix in ViewHelperManagerFactory</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2779">2779: Allow forms that have been added as fieldsets to bind values to bound ob...</a></li>
+    <li><a href="https://github.com/zendframework/zf2/issues/2782">2782: Issue 2781</a></li>
+</ul>
+
+<h2>Thank You!</h2>
+
+<p>
+    Many thanks to all contributors to this release! 
+</p>
+
+<h2>Reminder</h2>
+
+<p>
+    Maintenance releases happen monthly on the third Wednesday. Additionally, 
+    we have the next minor release, 2.1.0, slated for sometime next month.
+</p>]]></content:encoded>
+      <slash:comments>0</slash:comments>
+    </item>
+    <item>
+      <title>Zend Framework 2.0.2 Released!</title>
+      <pubDate>Fri, 21 Sep 2012 19:30:00 +0000</pubDate>
+      <link>http://framework.zend.com/blog/zend-framework-2-0-2-released.html</link>
+      <guid>http://framework.zend.com/blog/zend-framework-2-0-2-released.html</guid>
+      <author>matthew@zend.com (Matthew Weier O'Phinney)</author>
+      <dc:creator>Matthew Weier O'Phinney</dc:creator>
+      <content:encoded><![CDATA[<p>
+    The Zend Framework community is pleased to announce the immediate availability
+    of Zend Framework 2.0.2! Packages and installation instructions are
+    available at:
+</p>
+
+<ul>
+    <li>
+        <a href="/downloads/latest">http://framework.zend.com/downloads/latest</a>
+    </li>
+</ul>
+
+<p>
+    This release fixes an issue in the "Router" service that was affecting URL generation,
+    among other things.
+</p><p>
+    Specifically, for the 2.0.1 release, a change was made to allow URL generation
+    to continue to work even under a Console paradigm. However, this change apparently
+    caused URL generation to break in a number of situations when in an HTTP paradigm.
+    A fix was put into place, and integration tests created, to ensure this works
+    going forward.
+</p>
+
+<h2>Changelog</h2>
+
+<p>
+    A handful of other patches were also applied for this release;
+    the full list of changes follows:
+</p>
+
+<pre>
+- 2383: Changed unreserved char definition in Zend\Uri (ZF2-533) and added shell
+  escaping to the test runner (https://github.com/zendframework/zf2/pull/2383)
+- 2393: Trying to solve issue ZF2-558
+  (https://github.com/zendframework/zf2/pull/2393)
+- 2398: Segment route: add fix for optional groups within optional groups
+  (https://github.com/zendframework/zf2/pull/2398)
+- 2400: Use 'Router' in http env and 'HttpRouter' in cli
+  (https://github.com/zendframework/zf2/pull/2400)
+- 2401: Better precision for userland fmod algorithm
+  (https://github.com/zendframework/zf2/pull/2401)
+</pre>
+
+<h2>Thank You!</h2>
+
+<p>
+    Many thanks to all contributors to this release, and particularly to Jurian Sluiman
+    for resolving the issue, and Demian Katz for providing extra context and testing! 
+</p>]]></content:encoded>
+      <slash:comments>0</slash:comments>
+    </item>
+    <item>
+      <title>Zend Framework 2.0.1 Released!</title>
+      <pubDate>Thu, 20 Sep 2012 21:30:00 +0000</pubDate>
+      <link>http://framework.zend.com/blog/zend-framework-2-0-1-released.html</link>
+      <guid>http://framework.zend.com/blog/zend-framework-2-0-1-released.html</guid>
+      <author>matthew@zend.com (Matthew Weier O'Phinney)</author>
+      <dc:creator>Matthew Weier O'Phinney</dc:creator>
+      <content:encoded><![CDATA[<p>
+    The Zend Framework community is pleased to announce the immediate availability
+    of Zend Framework 2.0.1! Packages and installation instructions are
+    available at:
+</p>
+
+<ul>
+    <li>
+        <a href="/downloads/latest">http://framework.zend.com/downloads/latest</a>
+    </li>
+</ul>
+
+<p>
+    This release also includes a minor security fix; please read on for more details.
+</p><h2>Security</h2>
+
+<p>
+    Robert Basic reported that a number of components had not been refactored 
+    to use the new <code>Zend\Escaper</code> API internally. While they had been
+    escaping output, the methodology did not always follow that of the Escaper
+    component, and we decided to update them accordingly. You can <a href="/security/advisory/ZF2012-03">
+    read more about the issue on the ZF2012-03 advisory</a>.
+</p>
+
+<h2>Changelog</h2>
+
+<p>
+    We've applied almost 60 patches in the last two weeks, ranging from simple docblock
+    corrections to the aforementioned security patch. The full list of changes follows:
+</p>
+
+<pre>
+- 2285: Seed RouteMatch params as long as params is set. This permits setting an
+  empty array. (https://github.com/zendframework/zf2/pull/2285)
+- 2286: prepareNotFoundViewModel listner -  eventResult as ViewModel if set
+  (https://github.com/zendframework/zf2/pull/2286)
+- 2290: <span>$label</span> only when filled
+  (https://github.com/zendframework/zf2/pull/2290)
+- 2292: Allow (int)0 in coomments count in entry feed
+  (https://github.com/zendframework/zf2/pull/2292)
+- 2295: force to check className parameters
+  (https://github.com/zendframework/zf2/pull/2295)
+- 2296: mini-fix in controller plugin manager
+  (https://github.com/zendframework/zf2/pull/2296)
+- 2297: fixed phpdoc in Zend\Mvc\ApplicationInterface
+  (https://github.com/zendframework/zf2/pull/2297)
+- 2298: Update to Date element use statements to make it clearer which DateTime
+  (https://github.com/zendframework/zf2/pull/2298)
+- 2300: FormRow translate label fix (#ZF2-516)
+  (https://github.com/zendframework/zf2/pull/2300)
+- 2302: Notifications now to #zftalk.dev
+  (https://github.com/zendframework/zf2/pull/2302)
+- 2306: Fix several cs (https://github.com/zendframework/zf2/pull/2306)
+- 2307: Removed comment about non existent Zend_Tool
+  (https://github.com/zendframework/zf2/pull/2307)
+- 2308: Fix pluginmanager get method error
+  (https://github.com/zendframework/zf2/pull/2308)
+- 2309: Add consistency with event name
+  (https://github.com/zendframework/zf2/pull/2309)
+- 2310: Update library/Zend/Db/Sql/Select.php
+  (https://github.com/zendframework/zf2/pull/2310)
+- 2311: Version update (https://github.com/zendframework/zf2/pull/2311)
+- 2312: Validator Translations (https://github.com/zendframework/zf2/pull/2312)
+- 2313: ZF2-336: Zend\Form adds enctype attribute as multipart/form-data
+  (https://github.com/zendframework/zf2/pull/2313)
+- 2317: Make Fieldset constructor consistent with parent Element class
+  (https://github.com/zendframework/zf2/pull/2317)
+- 2321: ZF2-534 Zend\Log\Writer\Syslog prevents setting application name
+  (https://github.com/zendframework/zf2/pull/2321)
+- 2322: Jump to cache-storing instead of returning
+  (https://github.com/zendframework/zf2/pull/2322)
+- 2323: Conditional statements improved(minor changes).
+  (https://github.com/zendframework/zf2/pull/2323)
+- 2324: Fix for ZF2-517: Zend\Mail\Header\GenericHeader fails to parse empty
+  header (https://github.com/zendframework/zf2/pull/2324)
+- 2328: Wrong \__clone method (https://github.com/zendframework/zf2/pull/2328)
+- 2331: added validation support for optgroups
+  (https://github.com/zendframework/zf2/pull/2331)
+- 2332: README-GIT update with optional pre-commit hook
+  (https://github.com/zendframework/zf2/pull/2332)
+- 2334: Mail\Message::getSubject() should return value the way it was set
+  (https://github.com/zendframework/zf2/pull/2334)
+- 2335: ZF2-511 Updated refactored names and other fixes
+  (https://github.com/zendframework/zf2/pull/2335)
+- 2336: ZF-546 Remove duplicate check for time
+  (https://github.com/zendframework/zf2/pull/2336)
+- 2337: ZF2-539 Input type of image should not have attribute value
+  (https://github.com/zendframework/zf2/pull/2337)
+- 2338: ZF2-543: removed linked but not implemented cache adapters
+  (https://github.com/zendframework/zf2/pull/2338)
+- 2341: Updated Zend_Validate.php pt_BR translation to 25.Jul.2011 EN Revision
+  (https://github.com/zendframework/zf2/pull/2341)
+- 2342: ZF2-549 Zend\Log\Formatter\ErrorHandler does not handle complex events
+  (https://github.com/zendframework/zf2/pull/2342)
+- 2346: updated Page\Mvc::isActive to check if the controller param was
+  tinkered (https://github.com/zendframework/zf2/pull/2346)
+- 2349: Zend\Feed Added unittests for more code coverage
+  (https://github.com/zendframework/zf2/pull/2349)
+- 2350: Bug in Zend\ModuleManager\Listener\LocatorRegistrationListener
+  (https://github.com/zendframework/zf2/pull/2350)
+- 2351: ModuleManagerInterface is never used
+  (https://github.com/zendframework/zf2/pull/2351)
+- 2352: Hotfix for AbstractDb and Csrf Validators
+  (https://github.com/zendframework/zf2/pull/2352)
+- 2354: Update library/Zend/Feed/Writer/AbstractFeed.php
+  (https://github.com/zendframework/zf2/pull/2354)
+- 2355: Allow setting CsrfValidatorOptions in constructor
+  (https://github.com/zendframework/zf2/pull/2355)
+- 2356: Update library/Zend/Http/Cookies.php
+  (https://github.com/zendframework/zf2/pull/2356)
+- 2357: Update library/Zend/Barcode/Object/AbstractObject.php
+  (https://github.com/zendframework/zf2/pull/2357)
+- 2358: Update library/Zend/ServiceManager/AbstractPluginManager.php
+  (https://github.com/zendframework/zf2/pull/2358)
+- 2359: Update library/Zend/Server/Method/Parameter.php
+  (https://github.com/zendframework/zf2/pull/2359)
+- 2361: Zend\Form Added extra unit tests and some code improvements
+  (https://github.com/zendframework/zf2/pull/2361)
+- 2364: Remove unused use statements
+  (https://github.com/zendframework/zf2/pull/2364)
+- 2365: Resolve undefined classes and constants
+  (https://github.com/zendframework/zf2/pull/2365)
+- 2366: fixed typo in Zend\View\HelperPluginManager
+  (https://github.com/zendframework/zf2/pull/2366)
+- 2370: Error handling in AbstractWriter::write using Zend\Stdlib\ErrorHandler
+  (https://github.com/zendframework/zf2/pull/2370)
+- 2372: Update library/Zend/ServiceManager/Config.php
+  (https://github.com/zendframework/zf2/pull/2372)
+- 2375: zend-inputfilter already requires
+  (https://github.com/zendframework/zf2/pull/2375)
+- 2376: Activate the new GitHub feature: Contributing Guidelines
+  (https://github.com/zendframework/zf2/pull/2376)
+- 2377: Update library/Zend/Mvc/Controller/AbstractController.php
+  (https://github.com/zendframework/zf2/pull/2377)
+- 2379: Typo in property name in Zend/Db/Metadata/Object/AbstractTableObject.php
+  (https://github.com/zendframework/zf2/pull/2379)
+- 2382: PHPDoc params in AbstractTableGateway.php
+  (https://github.com/zendframework/zf2/pull/2382)
+- 2384: Replace Router with Http router in url view helper
+  (https://github.com/zendframework/zf2/pull/2384)
+- 2387: Replace PHP internal fmod function because it gives false negatives
+  (https://github.com/zendframework/zf2/pull/2387)
+- 2388: Proposed fix for ZF2-569 validating float with trailing 0's (10.0,
+  10.10) (https://github.com/zendframework/zf2/pull/2388)
+- 2391: clone in Filter\FilterChain
+  (https://github.com/zendframework/zf2/pull/2391)
+- Security fix: a number of classes were not using the Escaper component in
+  order to perform URL, HTML, and/or HTML attribute escaping. Please see
+  http://framework.zend.com/security/advisory/ZF2012-03 for more details.
+</pre>
+
+<h2>Thank You!</h2>
+
+<p>
+    Many thanks to all contributors to this release! Every change helps make 
+    the framework better.
+</p>
+
+<h2>Going Forward</h2>
+
+<p>
+    During an IRC meeting today, we voted to have monthly maintenance releases, 
+    falling on the third Wednesday of each month. Minor releases will be released
+    every 8 - 12 weeks, incrementally providing new features to the framework. We'll
+    keep you posted on the blog as new releases are made!
+</p>]]></content:encoded>
+      <slash:comments>0</slash:comments>
+    </item>
+    <item>
+      <title>Zend Framework 2.0.0 STABLE Released!</title>
+      <pubDate>Thu, 06 Sep 2012 02:00:00 +0000</pubDate>
+      <link>http://framework.zend.com/blog/zend-framework-2-0-0-stable-released.html</link>
+      <guid>http://framework.zend.com/blog/zend-framework-2-0-0-stable-released.html</guid>
+      <author>matthew@zend.com (Matthew Weier O'Phinney)</author>
+      <dc:creator>Matthew Weier O'Phinney</dc:creator>
+      <content:encoded><![CDATA[<p>
+    The Zend Framework community is pleased to announce the immediate availability
+    of Zend Framework 2.0.0 <strong>STABLE</strong>! Packages and installation instructions are
+    available at:
+</p>
+
+<ul>
+    <li>
+        <a href="/downloads/latest">http://framework.zend.com/downloads/latest</a>
+    </li>
+</ul><p>
+    Zend Framework 2 has been years in the making. Version 1.0.0 was released
+    in July 2007 -- over 5 years ago! Since then, we've incrementally added 
+    features, building on the solid base we'd created.
+</p>
+
+<p>
+    A lot of code has been written on those foundations -- estimates of ZF
+    downloads run anywhere from hundreds of thousands to millions, depending
+    on the statistics you look at. It's been used to build everything from
+    hobbyist websites to powering some of the most visited sites on the web.
+    We've done a lot with Zend Framework 1 over the years.
+</p>
+
+<p>
+    We also exposed a lot of cracks in the foundations. Patterns we'd taken 
+    for granted, such as Singletons, reared their ugly heads and showed us
+    where we'd built in inflexibility and hard-coded dependencies. We
+    realized that while we'd built a number of interfaces, our code was
+    making assumptions that fell outside those definitions. Some code, while
+    it felt elegant, was difficult to learn, or improperly intermingled 
+    different architectural concerns, creating problems where we hadn't had
+    any before.
+</p>
+
+<p>
+    Zend Framework 2 aims to build on our experiences with Zend Framework 1,
+    to learn both from our mistakes as well as our successes.
+</p>
+
+<p>
+    It's not perfect. No software project is. But I think it's qualitatively
+    <em>better</em>. We finally achieved a dream that was conceived in the 0.X
+    days of Zend Framework, to be able to create and consume standalone modules
+    of MVC code. Thanks to the efforts of <a href="http://blog.evan.pro/">Evan
+    Coury</a>, this was made possible via a new component, the <a href="/manual/2.0/en/modules/zend.module-manager.intro.html">ModuleManager</a>,
+    making the process trivially easy. Another problem that plagued ZF1 was how to get 
+    dependencies into controllers -- the ZF1 solution of using a singleton
+    (<code>Zend_Controller_Front</code>) to get at a registry (<code>Zend_Application_Bootstrap</code>) --
+    was, quite simply, a testing nightmare. Today, via <a href="/manual/2.0/en/modules/zend.service-manager.intro.html">the ServiceManager</a>,
+    or, if you're gutsy, <a href="/manual/2.0/en/modules/zend.di.introduction.html">Zend\Di</a>,
+    we have standard, testable solutions; we have <a href="http://ralphschindler.com/">Ralph Schindler</a>
+    to thank for both. Altering the workflow of the application or a single 
+    component was often difficult -- the various hooks were either not 
+    plentiful enough or difficult to arrange in different configurations. 
+    Thanks to the <a href="/manual/2.0/en/modules/zend.event-manager.event-manager.html">EventManager</a>,
+    these use cases are easily resolved.
+</p>
+
+<p>
+    The end result is that writing applications is a lot more flexible, and
+    in many cases easier.
+</p>
+
+<p>
+    If you've worked significantly with ZF1, ZF2 will look alien to you. That's
+    okay. We'll continue to support ZF1 with bugfixes and security updates for the
+    next 18 to 24 months. But start learning ZF2 -- I think once you do, you'll
+    be amazed and impressed by what you can accomplish. We plan to publish a migration
+    guide in the coming weeks to make your transition simpler, and to encourage
+    you to start utilizing the power of ZF2 sooner.
+</p>
+
+<p>
+    I'd go into detail on all the new components, but I don't want to bore you.
+    You can <a href="/changelog/2.0.0">read the changelog</a>, or attend one of the
+    <a href="http://www.zend.com/en/company/events/">many upcoming ZF2 webinars</a>
+    at zend.com. I'll be <a href="http://www.zend.com/en/company/news/event/1112_webinar-getting-started-with-zf2">hosting 
+    a ZF2 Intro next Wednesday</a> if you want some guidance.
+</p>
+
+<p>
+    If you're feeling brave and want to try out ZF2 today, we offer the following
+    resources:
+</p>
+
+<ul>
+    <li><a href="/downloads/latest">Our downloads page</a> details how to get your hands on the source code.</li>
+    <li><a href="/downloads/skeleton-app">Our skeleton application</a> is a fast way to have a working application that you can start tweaking.</li>
+    <li><a href="/downloads/phpcloud">Or try out ZF2 on phpcloud</a>, which will get you up and running without needing to even start a web server!</li>
+</ul>
+
+<p>
+    ZF2 has been the project of many people over the last couple years. I'd especially
+    like to call out my team, and the community review team (CR Team) for their efforts:
+</p>
+
+<ul>
+    <li>Ralph Schindler (Zend)</li>
+    <li>Enrico Zimuel (Zend)</li>
+    <li>Rob Allen (CR Team)</li>
+    <li>Pádraic Brady (CR Team)</li>
+    <li>Evan Coury (CR Team)</li>
+    <li>Maks3w (CR Team)</li>
+    <li>Ryan Mauger (CR Team)</li>
+    <li>Dolf Schimmel (CR Team)</li>
+    <li>Ben Scholzen (CR Team)</li>
+</ul>
+
+<p>
+    Take a moment to thank them when you get a chance -- without their efforts,
+    there would not be a ZF2.
+</p>
+
+<p>
+    Now, let's go build amazing things!
+</p>]]></content:encoded>
+      <slash:comments>0</slash:comments>
+    </item>
+    <item>
+      <title>Zend Framework 2.0.0rc6 Released!</title>
+      <pubDate>Wed, 29 Aug 2012 17:55:00 +0000</pubDate>
+      <link>http://framework.zend.com/blog/zend-framework-2-0-0rc6-released.html</link>
+      <guid>http://framework.zend.com/blog/zend-framework-2-0-0rc6-released.html</guid>
+      <author>matthew@zend.com (Matthew Weier O'Phinney)</author>
+      <dc:creator>Matthew Weier O'Phinney</dc:creator>
+      <content:encoded><![CDATA[<p>
+The Zend Framework community is pleased to announce the immediate availability
+of Zend Framework 2.0.0rc6! Packages and installation instructions are
+available at:
+</p>
+
+<ul class="ul">
+    <li>
+    <a href="http://packages.zendframework.com/">http://packages.zendframework.com/</a>
+    </li>
+</ul><p>
+We've been releasing release candidates weekly since mid-July. 
+At this time, RC6 is slated to be the last release candidate before shipping a 
+stable version. 
+</p>
+
+<p>
+RC6 has continued the cycle of decreasing numbers of pull requests, lending 
+weight to the idea that we are hitting a stable API. Around 30 patches
+were handled -- though not all were merged -- ranging from small consistency 
+fixes to solutions for often-reported issues. Additionally, around 20 
+documentation patches were handled, providing a steady stream of updates
+for the user guide.
+</p>
+
+<p>
+The full changelog is as follows:
+</p>
+
+<pre>
+- Zend\Config
+  - The INI adapter now allows bracket notation for appending values to an array
+    within INI definitions.
+- Zend\Db
+  - ResultInterface adds isBuffered() method for checking if the resultset is
+    buffered or not. Allows for more fine grained control of result set
+    buffering, including using the database engine's native buffering.
+  - Insertions with multi-part keys now work properly.
+  - Expression objects may now be passed to the order() method of a Select
+    object.
+- Zend\Form
+  - You can now omit error messages on elements when rendering via formRow(), by
+    passing a boolean false as the third argument of the helper.
+  - You can now use concrete hydrator instances with the factory.
+  - You may now set the CSRF validator class and/or options to use on the Csrf
+    element
+  - The Select, Radio, and MultiCheckbox elements and view helpers were
+    refactored to move value options into properties, instead of attributes.
+    This makes them more consistent with other elements, and simplifies the
+    interfaces.
+  - Forms now lazy-load an input filter if none has been specified; this should
+    simplify usage for many, and remove the "no input filter attached"
+    exception.
+  - All form helpers for buttons (button, submit, reset) now allow translation.
+  - The formRow() view helper now allows you to set the CSS class used to
+    designate an input with errors.
+- Zend\Http
+  - Some browser/web server combingations set SERVER_NAME to the IPv6 address,
+    and enclose it in brackets. The PhpEnvironment\Request object now correctly
+    detects such situations.
+  - The Socket client will only fallback to SSLv3 if the ssltransport
+    configuration key is not set (instead of also allowing SSLv2).
+- Zend\I18n\Translator
+  - Loader\LoaderInterface was splitted into Loader\FileLoaderInterface and
+    Loader\RemoteLoaderInterface. The latter one will be used in ZF 2.1 for
+    a database loader.
+  - Translator::addTranslationPattern() and the option "translation_patterns"
+    were renamed to Translator::addTranslationFilePattern and
+    "translation_file_patterns".
+  - A new method Translator::addRemoteTranslations() was added.
+- Zend\Mvc
+  - Application no longer defines the "application" identifier for its composed
+    EventManager instance. If you had listeners listening on that context,
+    update them to use "Zend\Mvc\Application". See this thread for more details:
+
+      http://zend-framework-community.634137.n4.nabble.com/Change-to-Zend-Mvc-Application-s-event-identifiers-tp4656517.html
+
+  - The redirect plugin's toRoute() method signature is now synced with that of
+    the url plugin's fromRoute() method.
+  - The PRG plugin now allows passing no arguments; if you do so, the currently
+    matched route will be used for the redirect.
+- Zend\Paginator
+  - Removes the factory() and related methods. This was done to be more
+    consistent with other components, and also because the utility was not
+    terribly useful; in most cases, developers needed to configure the adapter
+    up-front anyways.
+- Zend\Stdlib
+  - ClassMethods Hydrator now supports boolean getters prefixed with "is".
+- Zend\Validator
+  - DB validators no longer mix positional and named parameters.
+</pre>
+
+<p>
+    The <a href="http://github.com/zendframework/ZendSkeletonApplication">skeleton
+    application</a> and a <a
+    href="http://github.com/zendframework/ZendSkeletonModule">skeleton
+    module</a> have been updated for 2.0.0rc6, and are a 
+    great place to look to help get you started. You may also want to check out the <a
+    href="http://packages.zendframework.com/docs/latest/manual/en/user-guide/overview.html">user guide
+    </a>, as it provides a comprehensive tutorial for building a ZF2 application.
+</p>
+
+<p>
+    As a reminder, all ZF2 components are also available individually as <a 
+    href="http://pear2.php.net">Pyrus</a> AND <a 
+    href="http://getcomposer.org">composer</a> packages; <a 
+    href="http://packages.zendframework.com">packages.zendframework.com</a> 
+    is our official channel for both package formats.
+</p>
+
+<p>
+    I'd like to thank each and every person who has contributed ideas, feedback, 
+    pull requests (no pull request is too small!), testing, and more -- we're
+    almost to the goal of a stable next-generation framework!
+</p>]]></content:encoded>
+      <slash:comments>0</slash:comments>
+    </item>
+    <item>
+      <title>Zend Framework 2.0.0beta5 Released!</title>
+      <pubDate>Fri, 06 Jul 2012 16:30:00 +0000</pubDate>
+      <link>http://framework.zend.com/blog/zend-framework-2-0-0beta5-released.html</link>
+      <guid>http://framework.zend.com/blog/zend-framework-2-0-0beta5-released.html</guid>
+      <author>matthew@zend.com (Matthew Weier O'Phinney)</author>
+      <dc:creator>Matthew Weier O'Phinney</dc:creator>
+      <content:encoded><![CDATA[<p>
+The Zend Framework community is pleased to announce the immediate availability
+of Zend Framework 2.0.0beta5. Packages and installation instructions are
+available at:
+</p>
+
+<ul class="ul">
+    <li>
+    <a href="http://packages.zendframework.com/">http://packages.zendframework.com/</a>
+    </li>
+</ul><p>
+The Zend Framework community is pleased to announce the immediate availability
+of Zend Framework 2.0.0beta5. Packages and installation instructions are
+available at:
+</p>
+
+<dl>
+    <dd>
+    <a href="http://packages.zendframework.com/">http://packages.zendframework.com/</a>
+    </dd>
+</dl>
+
+<p>
+This is the fifth and last in a series of planned beta releases. The beta 
+release cycle has followed the "gmail" style of betas, whereby new features 
+have been added in each new release, and backwards compatibility (BC) has not 
+been guaranteed. The desire has been for developers to adopt and work with new 
+components as they are shipped, and provide feedback so we can polish the 
+distribution.
+</p>
+
+<p>
+Our plan at this time is to do some cleanup of the repository, fix some 
+outstanding issues and features, migrate documentation to a new repository and 
+format, and then begin the release candidate process. At this time, we 
+anticipate few if any BC breaks between now and the first release candidate (RC).
+Applications built today on beta5 will operate in the way we expect them to for 
+the stable release.
+</p>
+
+<p>
+Beta5 had a rigorous and busy schedule. We tackled a number of consistency
+issues, and solidified the security the framework offers via several fixes and 
+the new Escaper component. We processed over 400 pull requests again, in a 
+shorter timeframe than we had for beta4; the community really pulled together
+to get this release out the door.
+</p>
+
+<p>
+    There are three primary new features for the release:
+</p>
+
+<ul class="ul">
+    <li><code>Zend\Escaper</code>, which provides an OWASP-compliant solution 
+        for context-specific escaping mechanisms targetting HTML, HTML attributes, 
+        URLs, CSS, and JavaScript.</li>
+    <li><code>Zend\I18n</code>, which leverages <acronym title="PHP Hypertext 
+        Preprocessor">PHP</acronym>'s <code>ext/intl</code> extension to 
+        provide localization, and also provides a new translation component.</li>
+    <li><code>Zend\Form</code> now has new annotation support, allowing you
+        to define annotations in your domain entities that can then be used
+        to build a form and its related input filter and hydrator. Annotation
+        support now has a dependency on <a 
+        href="http://doctrine-project.org">Doctrine\Common</a>'s annotation 
+        library, for our default annotation syntax parser.</li>
+</ul>
+
+<p>
+    2.0.0beta5 had many more changes, as you can see from the release changelog:
+</p>
+
+<pre>
+ - Escaper component (Padraic Brady)
+    - Provides context-specific escaping mechanisms for HTML content,
+      HTML attributes, URLs, CSS, and JavaScript.
+    - BC BREAK: The escape() view helper was removed, and replaced with
+      escapeHtml(), escapeHtmlAttr(), escapeJs(), escapeCss(), and
+      escapeUrl() implementations.
+ - New I18n component (Ben Scholzen, Chris Martin, Dennis Portnov,
+   Matthew Weier O'Phinney)
+    - New component leveraging PHP's ext/intl extension to provide
+      internationalization (i18n) and localization (L10n) features and
+      capabilities to applications.
+    - LEVERAGES:
+        - DateTime, DateTimezone, IntlDateFormatter
+        - Locale
+        - NumberFormatter
+    - BC BREAK: REMOVES the following components:
+        - Zend\Currency
+        - Zend\Date
+        - Zend\Locale
+        - Zend\Measure
+        - Zend\Translator
+        - All filters, validators, and view helpers that relied on the
+          above.
+    - PROVIDES:
+        - Zend\I18n\Translator, including support for gettext and
+          PHP-array-based translations (more are planned).
+        - Zend\I18n\Filter, containing localized filtering capabilites
+          for Alnum (alphanumeric), Alpha (alphabetic), and NumberFormat
+          (numerical strings).
+        - Zend\I18n\Validator, containing localized validation
+          capabilities for Alnum (alphanumeric), Alpha (alphabetic),
+          Iban (international bank account number standard), Int
+          (integer), and PostCode (localized postal codes).
+        - Zend\I18n\View, containing localized view helpers for
+          CurrencyFormat, DateFormat, NumberFormat, Translate, and
+          TranslatePlural.
+ - Db layer additions (Ralph Schindler, Rob Allen, Guillaume Metayer,
+   Sascha Howe, Chris Testroet, Evan Coury, Ben Youngblood)
+    - Metadata support
+    - Postgresql adapter/driver
+    - New HydratingResultSet, allowing the ability to specify a custom
+      hydrator (from Zend\Stdlib\Hydrator) for hydrating row objects.
+    - Many bugfixes and stabilizations
+ - Form additions (Matthew Weier O'Phinney, Michaël Gallego, Yanick Rochon)
+    - Annotations support: Ability to use annotations with a domain
+      object in order to define a form, fieldsets, elements, inputs and
+      input filters, and more.
+    - Hydration of fieldsets; fieldsets may compose their own hydrators
+      if desired.
+    - Collection support; allows multiple instances of the same
+      fieldset. As an example, you might have an interface that
+      allows adding a set of form elements via an XHR call; on the
+      backend, these would be defined as a collection, allowing
+      arbitrary numbers of these fieldsets to be submitted.
+    - New view helpers covering most HTML5-specific element types, most
+      XHTML-specific element types. Additionally, a number of the
+      HTML5-specific element types now have Element implementations to
+      create turn-key solutions that include validation and filtering.
+    - BC BREAK: Options support. Many attributes were being used not as
+      HTML attributes but to define behavior. The ElementInterface now
+      has an accessor and mutator for options. Examples of options
+      include labels for non-radio/checkbox/select elements, the CAPTCHA
+      adapter for CAPTCHA elements, CSRF tokens, etc. If you were
+      defining labels in your forms, please move the label and label
+      attributes definitions from the "attributes" to the "options" of
+      the element, fieldset, or form.
+    - BC BREAK: new interface, ElementPrepareAwareInterface, defining
+      the method "prepareElement(Form $form)". The FieldsetInterface,
+      and, by extension, FormInterface, extend this new interface. It is
+      used to allow preparing elements prior to creating a
+      representation.
+ - MVC additions (Kyle Spraggs, Evan Coury, Matthew Weier O'Phinney)
+    - New "Params" controller plugin. Allows retrieving query, post,
+      cookie, header, and route parameters. Usage is
+      $this->params()->fromQuery($name, $default).
+    - New listener, Zend\Mvc\ModuleRouteListener. When enabled, if a
+      route match contains a "\__NAMESPACE__" key, that namespace value
+      will be prepended to the value of the "controller" key. This
+      should typically be used in the root route for a given module, to
+      ensure controller names do not clash.
+    - Bootstrap simplification. A new "init()" method was created that
+      accepts the path to a configuration file, and then creates and
+      bootstraps the application; this eliminates all common boilerplate
+      for the bootstrap scripts.
+ - Hydrator changes (Adam Lundrigan)
+    - BC BREAK: the ClassMethods hydrator now assumes by default that
+      it should convert between underscore_separated names and
+      camelCase.
+ - BC BREAK: Doctrine Annotations Parser (Matthew Weier O'Phinney, Marco
+   Pivetta, Guilherme Blanco)
+    - Zend\Code\Annotation now has a dependency on Doctrine\Common for
+      its annotation parser.
+    - Annotations now conform to Doctrine's standards by default, but
+      the AnnotationManager in ZF2 allows attaching alternate parsers
+      for specific annotation types.
+ - BC BREAK: Removal of Plugin Broker usage (Matthew Weier O'Phinney,
+   Evan Coury)
+    - All uses of the Plugin Broker / Plugin Class Locator combination
+      were removed. A new class, Zend\ServiceManager\AbstractPluginManager, 
+      was created and used to replace all previous usages of the plugin
+      broker. This provides more flexibility in creation of plugins, as
+      well as reduces the number of APIs developers need to learn.
+    - Configuration of plugin managers is now done at the top-level. All
+      plugin manager configuration follows the format utilized by
+      Zend\ServiceManager\ServiceConfiguration, and
+      Zend\ModuleManager\Listener\ServiceListener has been updated to
+      allow informing it of plugin manager instances it should manage,
+      as well as the configuration key to utilize.
+ - BC BREAK: Coding Standards (Maks3w, Sascha Prolic, Rob Allen)
+    - Renamed most abstract classes to prefix them with the term
+      "Abstract". In particular, ActionController and RestfulController
+      are now AbstractActionController and AbstractRestfulController.
+    - Renamed getters in HTTP, EventManager, and Mail components. These
+      components were using accessors such as "events()", "query()",
+      "headers()", etc. All such accessors were renamed to prepend
+      "get", and, in the case of "events()", renamed to indicate the
+      actual object retrieved ("getEventManager()"). 
+ - SECURITY FIX: XmlRpc (Matthew Weier O'Phinney)
+    - A security issue arising from XML eXternal Entity (XXE) injection
+      was patched; see http://framework.zend.com/security/advisory/ZF2012-01
+</pre>
+
+<p>
+    The <a href="http://github.com/zendframework/ZendSkeletonApplication">skeleton
+    application</a> and a <a
+    href="http://github.com/zendframework/ZendSkeletonModule">skeleton
+    module</a> have been updated for 2.0.0beta5, and are a 
+    great place to look to help get you started. You may also want to check out the <a
+    href="http://packages.zendframework.com/docs/latest/manual/en/zend.mvc.quick-start.html">quick start
+    guide to the MVC</a>.
+</p>
+
+<p>
+    As a reminder, all ZF2 components are also available individually as <a 
+    href="http://pear2.php.net">Pyrus</a> AND composer packages; 
+    packages.zendframework.com is our official channel for both package formats.
+</p>
+
+<p>
+I'd like to thank each and every person who has contributed ideas, feedback, 
+pull requests (no pull request is too small!), testing, and more -- every
+contribution is leading to a better, more stable, polished framework.
+</p>]]></content:encoded>
+      <slash:comments>0</slash:comments>
+    </item>
+    <item>
+      <title>Zend Framework 2.0.0beta4 Released!</title>
+      <pubDate>Tue, 22 May 2012 20:30:00 +0000</pubDate>
+      <link>http://framework.zend.com/blog/zend-framework-2-0-0beta4-released.html</link>
+      <guid>http://framework.zend.com/blog/zend-framework-2-0-0beta4-released.html</guid>
+      <author>matthew@zend.com (Matthew Weier O'Phinney)</author>
+      <dc:creator>Matthew Weier O'Phinney</dc:creator>
+      <content:encoded><![CDATA[<p>
+The Zend Framework community is pleased to announce the immediate availability
+of Zend Framework 2.0.0beta4. Packages and installation instructions are
+available at:
+</p>
+
+<ul class="ul">
+    <li>
+    <a href="http://packages.zendframework.com/">http://packages.zendframework.com/</a>
+    </li>
+</ul><p>
+This is the fourth in a series of planned beta releases. The beta release
+cycle is following the "gmail" style of betas, whereby new features will
+be added in each new release, and BC will not be guaranteed; beta
+releases will happen <em>approximately</em> every six weeks. The desire is for
+developers to adopt and work with new components as they are shipped, and
+provide feedback so we can polish the distribution.
+</p>
+
+<p>
+Our plan at this time is to have one last beta towards the end of June 2012, 
+and then begin the release candidate process. At this time, the MVC is looking
+and operating in the way we expect it to for the stable release.
+</p>
+
+<p>
+Beta4 was tremendously busy; as I compiled the release notes and looked through
+the pull requests, I discovered we'd handled more than double the number of 
+pull requests, and did similarly in terms of delivering new features and rewrites.
+The community did a tremendous amount of work polishing the framework and making
+it better.
+</p>
+
+<p>
+From the release changelog:
+</p>
+
+<pre>
+ - Config component (Enrico Zimuel)
+    -  Added reader and writer implementations for JSON and YAML configuration
+ - Crypt and Math (Enrico Zimuel)
+    - Creates a generic API for string and stream en/decryption
+    - Provides bcrypt support
+    - Provides BigInteger support
+    - Provides common methodology surrounding credential encryption and hashing
+ - Db layer (Ralph Schindler)
+    - Zend\Db\Adapter: added buffer() to the ResultInterface, added that feature
+      to Mysqli Result object
+    - Zend\Db\Adapter: added ability to subselect Sqlite for returning a true
+      count()
+    - Zend\Db\Adapter: added API to return helper closures from the Adapter API
+    - Renamed "database" to "schema" in all usages across Zend\Db
+    - Zend\Db\Adapter: Various fixes for PDO connection parameters
+    - Zend\Db\Sql: created a shared AbstractSql implementation to share
+      expression processing
+    - Zend\Db\Sql: created a more robust "Expression" object for use in Select
+      and Predicates
+    - Zend\Db\Sql: created an internal workflow and architecture to handle the
+      creation of platform specific queries
+    - Zend\Db\Sql: implemented limit() and offset() API to Select
+    - Zend\Db\Sql: added having(), order() to SELECT API
+    - Zend\Db\Sql: added alias support to Select::columns()
+    - Zend\Db\TableGateway: reorganized AbstractTableGateway and TableGateway,
+      removed other extensions in favor of "Features"
+    - Zend\Db\TableGateway: created a "Features" API in TableGatway to promote
+      horizontal extension of TableGatway
+ - Di (Ralph Schindler, Marco Pivetta)
+    - Added method injectDependencies($instance), to allow injecting an object
+      after an instance is already available (used in the ServiceManager)
+    - Various fixes based on issue reports
+ - Dojo
+    - REMOVED. Support was for out-dated versions of Dojo, and with the new Form
+      rewrite, it needs to be completely rewritten. This is targetted for post
+      2.0.0 at this time.
+ - EventManager (Matthew Weier O'Phinney)
+    - New SharedEventManager, a non-static version of the original
+      StaticEventManager
+    - StaticEventManager now extends SharedEventManager and implements a
+      singleton pattern
+    - New ServiceManager creates a shared instance of SharedEventManager and
+      injects it in a non-shared EventManager instance per service; static usage
+      is discouraged at this time.
+    - attachAggregate() now accepts an optional $priority, which, when present,
+      will be passed to the ListenerAggregate, allowing specifying a priority
+      during attachment of its events.
+    - EventManager now can handle arrays of events as well as wildcard events
+    - SharedEventManager now can handle arrays of contexts, wildcard contexts,
+      and arrays/wildcard events.
+ - Form (Matthew Weier O'Phinney, Kyle Spraggs, Guilherme Blanco)
+    - Complete rewrite
+    - Elements compose a name and attributes
+    - Fieldsets compose a name, attributes, and elements and fieldsets
+    - Forms compose a name, attributes, elements, fieldsets, an InputFilter, and
+      optionally a Hydrator and bound object.
+    - New form view helpers accept the Form objects in order to generate markup.
+    - Object binding allows direct binding of model data to and from the Form.
+ - InputFilter (Matthew Weier O'Phinney)
+    - New component for object-oriented creation of input filters
+    - Input objects compose filter and validator chains, as well as metadata
+      such as required, allow empty, break on failure, and more.
+    - InputFilter objects compose Input and InputFilter objects, and allow
+      validating the entire set or specified validation groups.
+ - Log (Enrico Zimuel, Benoit Durand)
+    - Refactored to provide more flexibility
+    - Adds API discoverability (instead of method overloading)
+    - Uses the PluginBroker for loading writers and formatters
+    - Uses PriorityQueue to manage writer priority
+    - Uses FilterChain for filtering messages
+    - Adds a renderer for exceptions, a JSON formatter, and additional interfaces
+ - Mail (Enrico Zimuel)
+    - Allow batch sending via the SMTP transport
+ - ModuleManager (Evan Coury, Matthew Weier O'Phinney)
+    - Renamed from "Module" to "ModuleManager"
+    - Renamed "Consumer" subnamespace to "Feature"
+    - Added new listeners:
+      - OnBootstrapListener (Module classes defining onBootstrap() will have
+        that method attached as a listener on the Application bootstrap event)
+      - LocatorRegistrationListener (Module classes implementing the
+        LocatorRegisteredInterface feature will be injected in the
+        ServiceManager)
+      - ServiceListener (Module classes defining getServiceConfiguration() will
+        have that method called, and the configuration merged; once all modules
+        are loaded, that merged configuration will be passed to the
+        ServiceManager)
+ - MVC (Matthew Weier O'Phinney, Ralph Schindler, Evan Coury)
+    - Removed Bootstrap class and rewrote Application class
+      - Composes a ServiceManager, and simply fires events
+    - Added RouteListener and DispatchListener classes, implementing the default
+      route and dispatch strategies.
+    - Created a new "Service" subnamespace, with ServiceManager configuration
+      and factories for the default MVC services.
+    - Created a new "ViewManager" class, which triggers on the bootstrap event,
+      at which time it creates the various objects of the view layer and wires
+      them together as well as registers them with the appropriate events.
+    - InjectTemplateListener now uses the controller namespace to further
+      namespace the view template; the default is now 
+      "<normalized top-level namespace>/<normalized controller name>/<action>"
+ - ServiceManager component (Ralph Schindler, Matthew Weier O'Phinney)
+    - Highly performant, programmatic service creation
+    - Largely replaces DI, but can also consume Zend\Di
+    - Allows:
+      - Service registration
+      - Lazy-loaded service objects
+      - Service factories
+      - Service aliasing
+      - Abstract (fallback) factories
+      - Initializers (manipulate instances after creation)
+    - Fully integrated in the MVC solution
+ - Renamed interfaces (Gabriel Baker, Sascha Prolic, Maks3w)
+   - Most, if not all, interfaces were renamed to suffix with the word
+     "Interface". This is to promote discovery of interfaces, as well as make
+     naming simpler.
+   - Exceptions are affected by this as well. Exception marker interfaces were
+     renamed to ExceptionInterface and pushed into the Exception subnamespace of
+     each component
+ - Composer support (Rob Allen, Marco Pivetta, Kyle Spraggs)
+   - Zend Framework is now installable via Composer (http://packagist.org/), as
+     are each of its individual components
+ - Travis CI integration (Marco Pivetta, Maks3w)
+   - ZF2 is tested on each commit by http://travis-ci.org/
+</pre>
+
+<p>
+    In all, well over <strong>400</strong>(!) bug and feature requests were 
+    handled since 2.0.0beta2 -- about twice what was handled for beta3, which
+    was in turn twice what we handled for beta2! We've definitely hit some
+    critical momentum and adoption.
+</p>
+
+<p>
+    Two changes are particularly noteworthy, as they are not so much code changes
+    as infrastructure changes: ZF2 now has <a 
+    href="http://packagist.org">Composer</a> support on a per-component basis, and 
+    the project now has continuous integration via <a 
+    href="http://travis-ci.org">Travis CI</a>. A number of contributors helped
+    make these initiatives not only possible, but succesful.
+</p>
+
+<p>
+    The <a href="http://github.com/zendframework/ZendSkeletonApplication">skeleton
+    application</a> and a <a
+    href="http://github.com/zendframework/ZendSkeletonModule">skeleton
+    module</a> have been updated for 2.0.0beta4, and are a 
+    great place to look to help get you started. You may also want to check out the <a
+    href="http://packages.zendframework.com/docs/latest/manual/en/zend.mvc.quick-start.html">quick start
+    guide to the MVC</a>.
+</p>
+
+<p>
+As a reminder, all ZF2 components are also available individually as <a href="http://pear2.php.net">Pyrus</a> 
+ AND composer packages; packages.zendframework.com is our official channel.
+</p>
+
+<p>
+I'd like to thank each and every person who has contributed ideas, feedback, 
+pull requests (no pull request is too small!), testing, and more -- I'm constantly
+amazed at the amount of energy and support the community contributes to the framework!
+</p>]]></content:encoded>
+      <slash:comments>0</slash:comments>
+    </item>
+    <item>
+      <title>Zend Framework 2.0.0beta3 Released!</title>
+      <pubDate>Fri, 02 Mar 2012 19:30:00 +0000</pubDate>
+      <link>http://framework.zend.com/blog/zend-framework-2-0-0beta3-released.html</link>
+      <guid>http://framework.zend.com/blog/zend-framework-2-0-0beta3-released.html</guid>
+      <author>matthew@zend.com (Matthew Weier O'Phinney)</author>
+      <dc:creator>Matthew Weier O'Phinney</dc:creator>
+      <content:encoded><![CDATA[<p>
+The Zend Framework community is pleased to announce the immediate availability
+of Zend Framework 2.0.0beta3. Packages and installation instructions are
+available at:
+</p>
+
+<ul class="ul">
+    <li>
+    <a href="http://packages.zendframework.com/">http://packages.zendframework.com/</a>
+    </li>
+</ul><p>
+The Zend Framework community is pleased to announce the immediate availability
+of Zend Framework 2.0.0beta3. Packages and installation instructions are
+available at:
+</p>
+
+<dl>
+    <dd>
+    <a href="http://packages.zendframework.com/">http://packages.zendframework.com/</a>
+    </dd>
+</dl>
+
+<p>
+This is the third in a series of planned beta releases. The beta release
+cycle is following the "gmail" style of betas, whereby new features will
+be added in each new release, and BC will not be guaranteed; beta
+releases will happen <em>approximately</em> every six weeks. The desire is for
+developers to adopt and work with new components as they are shipped, and
+provide feedback so we can polish the distribution.
+</p>
+
+<p>
+Once all code in the proposed <a href="http://framework.zend.com/wiki/pages/viewpage.action?pageId=43745438">standard distribution</a> 
+has reached maturity and reasonable stability, we will freeze the API and
+prepare for Release Candidate status. 
+</p>
+
+
+<p>
+Featured components and functionality of 2.0.0beta3 include:
+</p>
+
+<ul class="ul">
+    <li><b>Refactored Config component</b>
+    <ul class="ul">
+        <li>All configuration readers have been moved under the <code>Zend\Config\Reader</code> namespace</li>
+        <li>A <code>Zend\Config\Factory</code> has been added to simplify retrieving a config object from a config file</li>
+        <li>Supported configuration formats now support importing additional configuration files</li>
+        <li>All constant processing has been moved to a <code>Zend\Config\Processor</code> namespace, and expanded to be more powerful</li>
+        <li>Work was provided by Ben Scholzen, Artur Bodera, Enrico Zimuel, and Evan Coury</li>
+    </ul>
+    </li>
+    <li><b>New View layer</b>
+    <ul class="ul">
+        <li>New subcomponents include <code>Zend\View\Model</code>, <code>Zend\View\Resolver</code>, <code>Zend\View\Renderer</code>, and <code>Zend\View\Strategy</code></li>
+        <li>The old <code>Zend_View</code> class has been moved to <code>Zend\View\Renderer\PhpRenderer</code>, and rewritten to move most of its responsibilities into collaborators, greatly simplifying its design while simultaneously giving it more capabilities.</li>
+        <li>A new class, <code>Zend\View\View</code>, allows selecting rendering strategies on a per-template basis, based on arbitrary criteria, and optionally injecting rendering results into a Response object</code>
+        <li>MVC integration streamlines common use cases, including View Model creation and injection, 404 and error page creation, and more.</li>
+        <li>Work was provided by Matthew Weier O'Phinney, with copious feedback from Rob Allen.</li>
+    </ul>
+    </li>
+    <li><b>Rewritten DB layer</b>
+    <ul class="ul">
+        <li>New architecture features low-level drivers, which also provide access to
+    the PHP resource being consumed; adapters, which provide basic abstraction
+    for common CRUD operations; new SQL abstraction layer, with full predicate
+    support; abstraction for ResultSet's, with the ability to cast rows to
+    specific object types; abstraction for SQL metadata; and a revised Table and
+    Row Data Gateway.</li>
+        <li>Work was provided by Ralph Schindler</li>
+    </ul>
+    </li>
+    <li><b>New AgileZen component</b>
+    <ul class="ul">
+      <li>Support for the full <a href="http://www.agilezen.com">AgileZen</a> API</li>
+      <li>Developed for use with <a href="http://framework.zend.com/zf2/board">our planning board</a> </li>
+      <li>Work was provided by Enrico Zimuel</li>
+    </ul>
+    </li>
+    <li><b>PHP 5.4 Support</b>
+    <ul class="ul">
+      <li>A number of issues when running ZF2 under PHP 5.4 were identified and corrected.</li>
+    </ul>
+    </li>
+</ul>
+
+<p>
+    A number of other components received a fair amount of attention during 
+    this beta cycle, including Zend\GData, Zend\Navigation, Zend\Session, 
+    Zend\Service\StrikeIron, Zend\Service\Technorati, Zend\Service\Twitter, 
+    Zend\Http\Header\Accept*, Zend\Ldap, Zend\OAuth. A fair amount of feedback 
+    on the MVC and Module components was also provided and acted upon.
+</p>
+
+<p><b>
+    In all, around 200 bug and feature requests were handled since 2.0.0beta2 --
+    about twice what was handled for beta2!
+</b></p>
+
+
+<p>
+    The <a href="http://github.com/zendframework/ZendSkeletonApplication">skeleton
+    application</a> and a <a
+    href="http://github.com/zendframework/ZendSkeletonModule">skeleton
+    module</a> have been updated for 2.0.0beta3, and are a 
+    great place to look to help get you started. You may also want to check out the <a
+    href="http://packages.zendframework.com/docs/latest/manual/en/zend.mvc.quick-start.html">quick start
+    guide to the MVC</a>.
+powerful. 
+</p>
+
+<p>
+As a reminder, all ZF2 components are also available individually as <a href="http://pear2.php.net">Pyrus</a> 
+packages; packages.zendframework.com is our official channel.
+</p>
+
+<p>
+I'd like to thank each and every person who has contributed ideas, feedback, 
+pull requests (no pull request is too small!), testing, and more -- what the
+Zend Framework community has accomplished in the last two months is nothing
+short of astonishing!
+</p>]]></content:encoded>
+      <slash:comments>0</slash:comments>
+    </item>
+  </channel>
+</rss>
